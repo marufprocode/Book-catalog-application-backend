@@ -1,8 +1,8 @@
-// import httpStatus from 'http-status';
 import { Schema, model } from 'mongoose';
+import { BookModel, IBook } from './book.interface';
+// import httpStatus from 'http-status';
 // import ApiError from '../../../errors/errors.apiError';
 // import { User } from '../users/users.model';
-import { BookModel, IBook } from './book.interface';
 
 const bookSchema = new Schema<IBook>(
   {

@@ -6,7 +6,6 @@ import routes from './app/routes';
 import handleNotFoundRoutes from './app/middlewares/handleNotFoundRoutes';
 import cookieParser from 'cookie-parser';
 
-
 // using cors
 app.use(cors());
 
@@ -16,7 +15,6 @@ app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
 // Application routes
-// app.use('/api/v1/users/', userRouter);
 app.use('/api/v1', routes);
 
 //Testing routes is running well

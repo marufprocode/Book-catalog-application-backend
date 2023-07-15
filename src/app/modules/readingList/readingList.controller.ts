@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import catchAsync from '../../../shared/HOF/catchAsync';
 import ApiError from '../../../errors/errors.apiError';
+import catchAsync from '../../../shared/HOF/catchAsync';
 import httpStatus from 'http-status';
 import readingListService from './readingList.service';
 import sendResponse from '../../../shared/utilities/sendResponse';

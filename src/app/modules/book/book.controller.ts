@@ -52,34 +52,32 @@ const getSingleBook = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-// const deleteCow = catchAsync(async (req: Request, res: Response) => {
-//   const id = req.params.id;
-//   if (!req.user) {
-//     return new ApiError(httpStatus.FORBIDDEN, 'forbidden access, seller is not authorized');
-//   }
+const deleteBook = catchAsync(async (req: Request, res: Response) => {
+  const id = req.params.id;
+  if (!req.user) {
+    return new ApiError(httpStatus.FORBIDDEN, 'forbidden access, user is not authorized');
+  }
+  const result = await bookService.deleteBookFromDB(id, req.user.userId);
+  sendResponse<IBook | null>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: `${result ? 'Book deleted successfully!' : `No Book found with id: ${id}`}`,
+    data: result,
+  });
+});
 
-//   const result = await cowService.deleteCowFromDB(id, req.user.userId);
+const updateBook = catchAsync(async (req: Request, res: Response) => {
+  const id = req.params.id;
+  if (!req.user) {
+    return new ApiError(httpStatus.FORBIDDEN, 'forbidden access, user is not authorized');
+  }
+  const result = await bookService.updateBookToDB(id, req.body, req.user.userId);
+  sendResponse<IBook | null>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: `${result ? 'Book updated successfully !' : `No Book found with id: ${id}`}`,
+    data: result,
+  });
+});
 
-//   sendResponse<ICow | null>(res, {
-//     statusCode: httpStatus.OK,
-//     success: true,
-//     message: `${result ? 'Cow deleted successfully!' : `No Cow found with id: ${id}`}`,
-//     data: result,
-//   });
-// });
-
-// const updateCow = catchAsync(async (req: Request, res: Response) => {
-//   const id = req.params.id;
-//   if (!req.user) {
-//     return new ApiError(httpStatus.FORBIDDEN, 'forbidden access, seller is not authorized');
-//   }
-//   const result = await cowService.updateCowToDB(id, req.body, req.user.userId);
-//   sendResponse<ICow | null>(res, {
-//     statusCode: httpStatus.OK,
-//     success: true,
-//     message: `${result ? 'Cow updated successfully !' : `No Cow found with id: ${id}`}`,
-//     data: result,
-//   });
-// });
-
-export default { createBook, getAllBooks, getSingleBook };
+export default { createBook, getAllBooks, getSingleBook, deleteBook, updateBook };

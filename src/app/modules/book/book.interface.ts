@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { Document, Model, Schema } from 'mongoose';
 
 export interface IBook extends Document {

@@ -1,3 +1,4 @@
+import httpStatus from 'http-status';
 import ApiError from '../../../errors/errors.apiError';
 import { getSearchAndFiltersCondition } from '../../../shared/helpers/getSearchAndFiltersCondition';
 import { IPaginationOptions, IPaginationResponse } from '../../../shared/interfaces/paginaton';
@@ -5,10 +6,10 @@ import { booksSearchableFields } from './book.constants';
 import { IBook, IbookSearchAndFiletrs } from './book.interface';
 import { Book } from './book.model';
 
-const createNewBookToDB = async (cowData: IBook): Promise<IBook | null> => {
-  const createdBook = await Book.create(cowData);
+const createNewBookToDB = async (bookData: IBook): Promise<IBook | null> => {
+  const createdBook = await Book.create(bookData);
   if (!createdBook) {
-    throw new ApiError(400, 'Failed to create cow data');
+    throw new ApiError(400, 'Failed to create book');
   }
   return createdBook;
 };
@@ -37,30 +38,36 @@ const getSingleBookFromDB = async (id: string): Promise<IBook | null> => {
   return result;
 };
 
-// const deleteCowFromDB = async (id: string, sellerId: string): Promise<ICow | null> => {
-//   const verifiedSeller = await Cow.exists({ _id: id, seller: sellerId });
-//   if (!verifiedSeller) {
-//     throw new ApiError(httpStatus.FORBIDDEN, 'Unauthorized seller');
-//   }
-//   const result = await Cow.findByIdAndRemove(id);
-//   return result;
-// };
+const deleteBookFromDB = async (bookId: string, userId: string): Promise<IBook | null> => {
+  const book = await Book.findById(bookId);
+  if (!book) {
+    throw new ApiError(httpStatus.NOT_FOUND, `No Book found with id: ${bookId}`);
+  } else if (book?.createdBy.toString() !== userId) {
+    throw new ApiError(httpStatus.FORBIDDEN, 'Unauthorized user');
+  }
+  const result = await Book.findByIdAndRemove(bookId);
+  return result;
+};
 
-// const updateCowToDB = async (
-//   id: string,
-//   data: Partial<ICow>,
-//   sellerId: string
-// ): Promise<ICow | null> => {
-//   const verifiedSeller = await Cow.exists({ _id: id, seller: sellerId });
-//   if (!verifiedSeller) {
-//     throw new ApiError(httpStatus.FORBIDDEN, 'Unauthorized seller');
-//   }
-//   const result = await Cow.findOneAndUpdate({ _id: id }, data, { new: true, runValidators: true });
-//   return result;
-// };
+const updateBookToDB = async (
+  bookId: string,
+  data: Partial<IBook>,
+  userId: string
+): Promise<IBook | null> => {
+  const book = await Book.findById(bookId);
+  if (!book) {
+    throw new ApiError(httpStatus.NOT_FOUND, `No Book found with id: ${bookId}`);
+  } else if (book?.createdBy.toString() !== userId) {
+    throw new ApiError(httpStatus.FORBIDDEN, 'Unauthorized user');
+  }
+  const result = await Book.findOneAndUpdate({ _id: bookId }, data, { new: true, runValidators: true });
+  return result;
+};
 
 export default {
   createNewBookToDB,
   getAllBooksFromDB,
-  getSingleBookFromDB
+  getSingleBookFromDB,
+  deleteBookFromDB,
+  updateBookToDB,
 };

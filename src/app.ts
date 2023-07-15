@@ -21,7 +21,7 @@ app.use('/api/v1', routes);
 
 //Testing routes is running well
 app.get('/', async (req: Request, res: Response) => {
-  res.send('Digital Cow Hat Backend Server is Running');
+  res.send('Book Catalog Backend Server is Running');
 });
 
 //global error handler

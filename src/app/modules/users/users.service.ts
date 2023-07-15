@@ -1,12 +1,12 @@
 import httpStatus from 'http-status';
 import ApiError from '../../../errors/errors.apiError';
+import { User } from '../users/users.model';
 import {
   ILoginUser,
   ILoginUserResponse,
   IRefreshTokenResponse,
   IUser,
 } from '../users/users.interface';
-import { User } from '../users/users.model';
 import { jwtHelpers } from '../../../shared/helpers/jwtHelpers';
 import config from '../../../config';
 

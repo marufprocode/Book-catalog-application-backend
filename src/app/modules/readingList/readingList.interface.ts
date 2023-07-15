@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { Document, Model, Schema } from 'mongoose';
 
+// READING_STATUS enums
 export enum READING_STATUS {
   READING = 'Currently Reading',
   READ_SOON= 'Read Soon',

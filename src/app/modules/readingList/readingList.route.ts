@@ -1,6 +1,6 @@
 import express from 'express';
-import checkAuth from '../../middlewares/checkAuth';
 import readingListController from './readingList.controller';
+import checkAuth from '../../middlewares/checkAuth';
 
 const router = express.Router();
 

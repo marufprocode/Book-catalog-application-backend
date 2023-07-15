@@ -5,8 +5,8 @@ import config from '../../config';
 import { Error } from 'mongoose';
 import ApiError from '../../errors/errors.apiError';
 import handleValidationError from '../../errors/errors.handleValidationError';
-import handleCastError from '../../errors/errors.handleCastError';
 import httpStatus from 'http-status';
+import handleCastError from '../../errors/errors.handleCastError';
 
 const globalErrorHandler: ErrorRequestHandler = (error, req, res, next) => {
   // check if the error happened before in the console or logs the error

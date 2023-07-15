@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import { ErrorRequestHandler } from 'express';
-import config from '../../config';
 import { IGenericErrorMessage } from '../../errors/errors.interfaces';
+import config from '../../config';
 import { Error } from 'mongoose';
 import ApiError from '../../errors/errors.apiError';
 import handleValidationError from '../../errors/errors.handleValidationError';

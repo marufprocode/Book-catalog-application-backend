@@ -11,13 +11,13 @@ export const getSearchAndFiltersCondition = (
   options: { [Type: string]: string },
   searchableFields: string[]
 ): returnType => {
-  const { searchTerm, ...filters } = options;
+  const { search, ...filters } = options;
   const conditions = [];
-  if (searchTerm) {
+  if (search) {
     conditions.push({
       $or: searchableFields.map(field => ({
         [field]: {
-          $regex: searchTerm,
+          $regex: search,
           $options: 'i',
         },
       })),
@@ -27,24 +27,16 @@ export const getSearchAndFiltersCondition = (
     const filterConditions: { [field: string]: string | Record<string, unknown> } = {};
 
     Object.entries(filters).forEach(([field, value]) => {
-      if (field === 'minPrice') {
-        filterConditions.price = {
-          ...((filterConditions.price as unknown) || {}),
-          $gte: parseInt(value, 10),
-        };
-      } else if (field === 'maxPrice') {
-        filterConditions.price = {
-          ...((filterConditions.price as unknown) || {}),
-          $lte: parseInt(value, 10),
-        };
-      } else {
-        filterConditions[field] = {
-          $regex: value,
-          $options: 'i',
-        };
-      }
+      // if (field === 'publicationYear') {
+      //   filterConditions[field] = value;
+      // } else{
+      //   filterConditions[field] = {
+      //     $regex: value,
+      //     $options: 'i',
+      //   };
+      // }  
+      filterConditions[field] = value;
     });
-
     if (Object.keys(filterConditions).length) {
       conditions.push({
         $and: [filterConditions],

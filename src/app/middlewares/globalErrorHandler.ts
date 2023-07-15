@@ -2,11 +2,9 @@
 import { ErrorRequestHandler } from 'express';
 import config from '../../config';
 import { IGenericErrorMessage } from '../../errors/errors.interfaces';
-import { ZodError } from 'zod';
 import { Error } from 'mongoose';
 import ApiError from '../../errors/errors.apiError';
 import handleValidationError from '../../errors/errors.handleValidationError';
-import handleZodError from '../../errors/errors.handleZodError';
 import handleCastError from '../../errors/errors.handleCastError';
 import httpStatus from 'http-status';
 
@@ -22,11 +20,6 @@ const globalErrorHandler: ErrorRequestHandler = (error, req, res, next) => {
 
   if (error?.name === 'ValidationError') {
     const simplifiedError = handleValidationError(error);
-    statusCode = simplifiedError.statusCode;
-    message = simplifiedError.message;
-    errorMessages = simplifiedError.errorMessages;
-  } else if (error instanceof ZodError) {
-    const simplifiedError = handleZodError(error);
     statusCode = simplifiedError.statusCode;
     message = simplifiedError.message;
     errorMessages = simplifiedError.errorMessages;

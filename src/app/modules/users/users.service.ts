@@ -1,50 +1,81 @@
-import { IAdmin } from '../admin/admin.interface';
-import { Admin } from '../admin/admin.model';
-import { IUser } from './users.interface';
-import { User } from './users.model';
+import httpStatus from 'http-status';
+import ApiError from '../../../errors/errors.apiError';
+import {
+  ILoginUser,
+  ILoginUserResponse,
+  IRefreshTokenResponse,
+  IUser,
+} from '../users/users.interface';
+import { User } from '../users/users.model';
+import { jwtHelpers } from '../../../shared/helpers/jwtHelpers';
+import config from '../../../config';
 
-const getAllUsersFromDB = async (): Promise<IUser[] | null> => {
-  const users = await User.find({});
-  return users;
-};
-const getSingleUserFromDB = async (id: string): Promise<IUser | null> => {
-  const user = await User.findById(id);
-  return user;
-};
-const getMyProfileFromDB = async (
-  user: Record<string, unknown>
-): Promise<IUser | IAdmin | null> => {
-  if (user.role === 'admin') {
-    const result = await Admin.findOne({ _id: user.userId, role: user.role });
-    return result;
-  } else {
-    const result = await User.findOne({ _id: user.userId, role: user.role });
-    return result;
+const createUserToDB = async (user: IUser): Promise<IUser | null> => {
+  const createdUser = await User.create(user);
+  const result = User.findById(createdUser.id);
+  if (!createdUser) {
+    throw new ApiError(400, 'Failed to create user');
   }
-};
-const deleteUserFromDB = async (id: string): Promise<IUser | null> => {
-  const user = await User.findByIdAndRemove(id);
-  return user;
-};
-const updateUserToDB = async (id: string, data: Partial<IUser>): Promise<IUser | null> => {
-  const result = await User.findByIdAndUpdate(id, data, { new: true, runValidators: true });
   return result;
 };
-const updateMyProfileToDB = async (user: Record<string, unknown>, data:Partial<IUser | IAdmin>): Promise<IUser | IAdmin | null> => {
-  if (user.role === 'admin') {
-    const result = await Admin.findByIdAndUpdate(user.userId, data, { new: true, runValidators: true }).lean();
-    return result;
-  } else {
-    const result = await User.findByIdAndUpdate(user.userId, data, { new: true, runValidators: true }).lean();
-    return result;
+
+const loginUser = async (payload: ILoginUser): Promise<ILoginUserResponse> => {
+  const { email, password } = payload;
+
+  const isUserExist = await User.isUserExist(email);
+
+  if (!isUserExist) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User does not exist');
   }
+
+  if (isUserExist.password && !(await User.isPasswordMatched(password, isUserExist.password))) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Password is incorrect');
+  }
+
+  // create access token & refresh token
+  const accessToken = jwtHelpers.createToken(
+    { userId: isUserExist.id, email: isUserExist.email },
+    config.jwt.secret,
+    config.jwt.expires_in
+  );
+
+  const refreshToken = jwtHelpers.createToken(
+    { userId: isUserExist.id, email: isUserExist.email },
+    config.jwt.refresh_secret,
+    config.jwt.refresh_expires_in
+  );
+
+  return {
+    accessToken,
+    refreshToken,
+  };
 };
 
-export default {
-  getAllUsersFromDB,
-  getSingleUserFromDB,
-  deleteUserFromDB,
-  updateUserToDB,
-  getMyProfileFromDB,
-  updateMyProfileToDB,
+const refreshToken = async (token: string): Promise<IRefreshTokenResponse> => {
+  let verifiedToken = null;
+  try {
+    verifiedToken = jwtHelpers.verifyToken(token, config.jwt.refresh_secret);
+  } catch (err) {
+    throw new ApiError(httpStatus.FORBIDDEN, 'Invalid Refresh Token');
+  }
+
+  const { userId } = verifiedToken;
+
+  // checking deleted user's refresh token
+  const isUserExist = await User.findById(userId, { id: 1, email: 1 });
+  if (!isUserExist) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User does not exist');
+  }
+  //generate new token
+  const newAccessToken = jwtHelpers.createToken(
+    { userId: isUserExist.id, email: isUserExist.email },
+    config.jwt.secret,
+    config.jwt.expires_in
+  );
+
+  return {
+    accessToken: newAccessToken,
+  };
 };
+
+export default { createUserToDB, loginUser, refreshToken };

@@ -1,75 +1,65 @@
 import { Request, Response } from 'express';
-import usersService from './users.service';
 import catchAsync from '../../../shared/HOF/catchAsync';
-import httpStatus from 'http-status';
 import sendResponse from '../../../shared/utilities/sendResponse';
-import { IUser } from './users.interface';
-import ApiError from '../../../errors/errors.apiError';
-import { IAdmin } from '../admin/admin.interface';
+import { ILoginUserResponse, IRefreshTokenResponse, IUser } from '../users/users.interface';
+import httpStatus from 'http-status';
+import config from '../../../config';
+import usersService from './users.service';
 
-const getAllUsers = catchAsync(async (req: Request, res: Response) => {
-  const data = await usersService.getAllUsersFromDB();
-  sendResponse<IUser[] | null>(res, {
-    statusCode: httpStatus.OK,
+const createUser = catchAsync(async (req: Request, res: Response) => {
+  const user = req.body;
+  // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
+  const result = await usersService.createUserToDB(user);
+  sendResponse<IUser>(res, {
+    statusCode: httpStatus.CREATED,
     success: true,
-    message: 'Users retrieved successfully',
-    data,
-  });
-});
-
-const getSignleUsers = catchAsync(async (req: Request, res: Response) => {
-  const id = req.params.id;
-  const data = await usersService.getSingleUserFromDB(id);
-  sendResponse<IUser | null>(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: `${data ? 'User retrieved successfully' : `No user found with id: ${id}`}`,
-    data,
-  });
-});
-const getMyProfile = catchAsync(async (req: Request, res: Response) => {
-  if (!req.user) {
-    return new ApiError(httpStatus.FORBIDDEN, 'forbidden access');
-  }
-  const data = await usersService.getMyProfileFromDB(req.user);
-  sendResponse<IUser | IAdmin | null>(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: "User's information retrieved successfully",
-    data,
-  });
-});
-const deleteUser = catchAsync(async (req: Request, res: Response) => {
-  const id = req.params.id;
-  const data = await usersService.deleteUserFromDB(id);
-  sendResponse<IUser | null>(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: `${data ? 'User deleted successfully' : `No user found with id: ${id}`}`,
-    data,
-  });
-});
-const updateUser = catchAsync(async (req: Request, res: Response) => {
-  const id = req.params.id;
-  const result = await usersService.updateUserToDB(id, req.body);
-  sendResponse<IUser | null>(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: `${result ? 'User updated successfully' : `Something went wrong, Not updated!`}`,
-    data:result,
-  });
-});
-const updateMyProfile = catchAsync(async (req: Request, res: Response) => {
-  if (!req.user) {
-    return new ApiError(httpStatus.FORBIDDEN, 'forbidden access');
-  }
-  const result = await usersService.updateMyProfileToDB(req.user, req.body);
-  sendResponse<IUser | IAdmin | null>(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: `${result ? "User's information retrieved successfully":"No User's information found"}`,
-    data:result,
+    message: 'Users created successfully',
+    data: result,
   });
 });
 
-export default { getAllUsers, getSignleUsers, deleteUser, updateUser, getMyProfile, updateMyProfile };
+const loginUser = catchAsync(async (req: Request, res: Response) => {
+  const loginData = req.body;
+  const result = await usersService.loginUser(loginData);
+  const { refreshToken, ...others } = result;
+
+  // set refresh token into cookie
+  const cookieOptions = {
+    secure: config.env === 'production',
+    httpOnly: true,
+  };
+
+  res.cookie('refreshToken', refreshToken, cookieOptions);
+
+  sendResponse<ILoginUserResponse>(res, {
+    statusCode: 200,
+    success: true,
+    message: 'User logged in successfully !',
+    data: others,
+  });
+});
+
+const refreshToken = catchAsync(async (req: Request, res: Response) => {
+  const { refreshToken } = req.cookies;
+
+  const result = await usersService.refreshToken(refreshToken);
+  // set refresh token into cookie
+
+  const cookieOptions = {
+    secure: config.env === 'production',
+    httpOnly: true,
+  };
+
+  res.cookie('refreshToken', refreshToken, cookieOptions);
+
+  sendResponse<IRefreshTokenResponse>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'New access token generated successfully !',
+    data: result,
+  });
+});
+
+
+
+export default { createUser, loginUser, refreshToken };

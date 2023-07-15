@@ -4,26 +4,21 @@ import ApiError from '../../errors/errors.apiError';
 import { jwtHelpers } from '../../shared/helpers/jwtHelpers';
 import config from '../../config';
 
-const checkAuth =
-  (...requiredRoles: string[]) =>
+const checkAuth = () =>
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       //get authorization token
-      const token = req.headers.authorization;
-      if (!token) {
+      const authHeader = req.headers.authorization;
+      if (!authHeader || !authHeader.startsWith('Bearer')) {
         throw new ApiError(httpStatus.UNAUTHORIZED, 'You are not authorized');
       }
+
+      const token = authHeader.split(' ')[1]; // Extract the token from the "Bearer" scheme
       // verify token
       let verifiedUser = null;
 
       verifiedUser = jwtHelpers.verifyToken(token, config.jwt.secret);
-
-      req.user = verifiedUser; // role  , userid
-
-      // role diye guard korar jnno
-      if (requiredRoles.length && !requiredRoles.includes(verifiedUser.role)) {
-        throw new ApiError(httpStatus.FORBIDDEN, 'Forbidden');
-      }
+      req.user = verifiedUser;
       next();
     } catch (error) {
       next(error);

@@ -1,23 +1,18 @@
 import express from 'express';
 import usersRoutes from '../modules/users/users.routes';
-import authRoutes from '../modules/auth/auth.routes';
-import cowRoutes from '../modules/cow/cow.routes';
+import booksRoutes from '../modules/book/book.routes';
 
 const router = express.Router();
 
 const appRoutes = [
   {
-    path: '/users',
+    path: '/auth',
     route: usersRoutes,
   },
   {
-    path: '/auth',
-    route: authRoutes,
+    path: '/books',
+    route: booksRoutes,
   },
-  {
-    path: '/cows',
-    route: cowRoutes,
-  }
 ];
 
 appRoutes.forEach(route => router.use(route.path, route.route));

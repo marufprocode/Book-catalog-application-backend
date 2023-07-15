@@ -9,6 +9,7 @@ export interface IBook extends Document {
   createdBy: Schema.Types.ObjectId;
 }
 
+//Book Model Definition
 export type BookModel = Model<IBook, Record<string, unknown>>;
 
 export interface IbookSearchAndFiletrs {

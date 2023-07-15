@@ -32,10 +32,10 @@ const getAllBooksFromDB = async (
   };
 };
 
-// const getSingleCowFromDB = async (id: string): Promise<ICow | null> => {
-//   const result = await Cow.findById(id);
-//   return result;
-// };
+const getSingleBookFromDB = async (id: string): Promise<IBook | null> => {
+  const result = await Book.findById(id);
+  return result;
+};
 
 // const deleteCowFromDB = async (id: string, sellerId: string): Promise<ICow | null> => {
 //   const verifiedSeller = await Cow.exists({ _id: id, seller: sellerId });
@@ -62,4 +62,5 @@ const getAllBooksFromDB = async (
 export default {
   createNewBookToDB,
   getAllBooksFromDB,
+  getSingleBookFromDB
 };

@@ -41,16 +41,16 @@ const getAllBooks = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-// const getSingleCow = catchAsync(async (req: Request, res: Response) => {
-//   const id = req.params.id;
-//   const result = await cowService.getSingleCowFromDB(id);
-//   sendResponse<ICow | null>(res, {
-//     statusCode: httpStatus.OK,
-//     success: true,
-//     message: `${result ? 'Cow retrieved successfully !' : `No Cow found with id: ${id}`}`,
-//     data: result,
-//   });
-// });
+const getSingleBook = catchAsync(async (req: Request, res: Response) => {
+  const id = req.params.id;
+  const result = await bookService.getSingleBookFromDB(id);
+  sendResponse<IBook | null>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: `${result ? 'Book retrieved successfully !' : `No Book found with id: ${id}`}`,
+    data: result,
+  });
+});
 
 // const deleteCow = catchAsync(async (req: Request, res: Response) => {
 //   const id = req.params.id;
@@ -82,4 +82,4 @@ const getAllBooks = catchAsync(async (req: Request, res: Response) => {
 //   });
 // });
 
-export default { createBook, getAllBooks };
+export default { createBook, getAllBooks, getSingleBook };

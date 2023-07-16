@@ -1,7 +1,7 @@
 {
-  "name": "digital-cow-service",
+  "name": "book-catalog-backend",
   "version": "1.0.0",
-  "description": "Digtial cow hat backend service",
+  "description": "book catalog backend service",
   "main": "src/server.ts",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",

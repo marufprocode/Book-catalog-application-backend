@@ -7,7 +7,10 @@ import handleNotFoundRoutes from './app/middlewares/handleNotFoundRoutes';
 import cookieParser from 'cookie-parser';
 
 // using cors
-app.use(cors());
+app.use(cors({
+  credentials: true,
+  origin: 'http://localhost:5173',
+}));
 
 //parser
 app.use(express.json());

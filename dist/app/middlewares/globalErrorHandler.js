@@ -4,13 +4,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const config_1 = __importDefault(require("../../config"));
-const zod_1 = require("zod");
 const mongoose_1 = require("mongoose");
 const errors_apiError_1 = __importDefault(require("../../errors/errors.apiError"));
 const errors_handleValidationError_1 = __importDefault(require("../../errors/errors.handleValidationError"));
-const errors_handleZodError_1 = __importDefault(require("../../errors/errors.handleZodError"));
-const errors_handleCastError_1 = __importDefault(require("../../errors/errors.handleCastError"));
 const http_status_1 = __importDefault(require("http-status"));
+const errors_handleCastError_1 = __importDefault(require("../../errors/errors.handleCastError"));
 const globalErrorHandler = (error, req, res, next) => {
     // check if the error happened before in the console or logs the error
     config_1.default.env === 'development'
@@ -25,11 +23,10 @@ const globalErrorHandler = (error, req, res, next) => {
         message = simplifiedError.message;
         errorMessages = simplifiedError.errorMessages;
     }
-    else if (error instanceof zod_1.ZodError) {
-        const simplifiedError = (0, errors_handleZodError_1.default)(error);
-        statusCode = simplifiedError.statusCode;
-        message = simplifiedError.message;
-        errorMessages = simplifiedError.errorMessages;
+    else if ((error === null || error === void 0 ? void 0 : error.name) === 'TokenExpiredError') {
+        statusCode = http_status_1.default.FORBIDDEN;
+        message = "Token Expired";
+        errorMessages = [];
     }
     else if ((error === null || error === void 0 ? void 0 : error.name) === 'CastError') {
         const simplifiedError = (0, errors_handleCastError_1.default)(error);

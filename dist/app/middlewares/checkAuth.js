@@ -16,21 +16,18 @@ const http_status_1 = __importDefault(require("http-status"));
 const errors_apiError_1 = __importDefault(require("../../errors/errors.apiError"));
 const jwtHelpers_1 = require("../../shared/helpers/jwtHelpers");
 const config_1 = __importDefault(require("../../config"));
-const checkAuth = (...requiredRoles) => (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const checkAuth = () => (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         //get authorization token
-        const token = req.headers.authorization;
-        if (!token) {
-            throw new errors_apiError_1.default(http_status_1.default.UNAUTHORIZED, 'You are not authorized');
+        const authHeader = req.headers.authorization;
+        if (!authHeader || !authHeader.startsWith('Bearer')) {
+            throw new errors_apiError_1.default(http_status_1.default.FORBIDDEN, 'Forbidden Access');
         }
+        const token = authHeader.split(' ')[1]; // Extract the token from the "Bearer" scheme
         // verify token
         let verifiedUser = null;
         verifiedUser = jwtHelpers_1.jwtHelpers.verifyToken(token, config_1.default.jwt.secret);
-        req.user = verifiedUser; // role  , userid
-        // role diye guard korar jnno
-        if (requiredRoles.length && !requiredRoles.includes(verifiedUser.role)) {
-            throw new errors_apiError_1.default(http_status_1.default.FORBIDDEN, 'Forbidden');
-        }
+        req.user = verifiedUser;
         next();
     }
     catch (error) {

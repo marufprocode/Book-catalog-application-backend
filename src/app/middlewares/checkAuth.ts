@@ -10,13 +10,11 @@ const checkAuth = () =>
       //get authorization token
       const authHeader = req.headers.authorization;
       if (!authHeader || !authHeader.startsWith('Bearer')) {
-        throw new ApiError(httpStatus.UNAUTHORIZED, 'You are not authorized');
+        throw new ApiError(httpStatus.FORBIDDEN, 'Forbidden Access');
       }
-
       const token = authHeader.split(' ')[1]; // Extract the token from the "Bearer" scheme
       // verify token
       let verifiedUser = null;
-
       verifiedUser = jwtHelpers.verifyToken(token, config.jwt.secret);
       req.user = verifiedUser;
       next();

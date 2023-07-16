@@ -1,13 +1,11 @@
 /* eslint-disable no-unused-vars */
-import { Document, Model, Schema } from 'mongoose';
+import { Document, Model } from 'mongoose';
 
 export interface IUser extends Document{
+  id: string;
   name: string;
   password: string;
   email: string;
-  wishlist?: Schema.Types.ObjectId[] | null;
-  readingList?: Schema.Types.ObjectId[] | null;
-  finishedReading?: Schema.Types.ObjectId[] | null
 }
 
 export interface UserStaticModel extends Model<IUser> {
@@ -18,6 +16,7 @@ export interface UserStaticModel extends Model<IUser> {
 export interface ILoginUserResponse {
   accessToken: string;
   refreshToken?: string;
+  user: IUser;
 }
 
 export interface ILoginUser {

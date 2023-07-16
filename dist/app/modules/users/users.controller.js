@@ -8,76 +8,68 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const users_service_1 = __importDefault(require("./users.service"));
 const catchAsync_1 = __importDefault(require("../../../shared/HOF/catchAsync"));
-const http_status_1 = __importDefault(require("http-status"));
 const sendResponse_1 = __importDefault(require("../../../shared/utilities/sendResponse"));
-const errors_apiError_1 = __importDefault(require("../../../errors/errors.apiError"));
-const getAllUsers = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const data = yield users_service_1.default.getAllUsersFromDB();
+const http_status_1 = __importDefault(require("http-status"));
+const config_1 = __importDefault(require("../../../config"));
+const users_service_1 = __importDefault(require("./users.service"));
+const createUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = req.body;
+    // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
+    const result = yield users_service_1.default.createUserToDB(user);
     (0, sendResponse_1.default)(res, {
-        statusCode: http_status_1.default.OK,
+        statusCode: http_status_1.default.CREATED,
         success: true,
-        message: 'Users retrieved successfully',
-        data,
-    });
-}));
-const getSignleUsers = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const id = req.params.id;
-    const data = yield users_service_1.default.getSingleUserFromDB(id);
-    (0, sendResponse_1.default)(res, {
-        statusCode: http_status_1.default.OK,
-        success: true,
-        message: `${data ? 'User retrieved successfully' : `No user found with id: ${id}`}`,
-        data,
-    });
-}));
-const getMyProfile = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    if (!req.user) {
-        return new errors_apiError_1.default(http_status_1.default.FORBIDDEN, 'forbidden access');
-    }
-    const data = yield users_service_1.default.getMyProfileFromDB(req.user);
-    (0, sendResponse_1.default)(res, {
-        statusCode: http_status_1.default.OK,
-        success: true,
-        message: "User's information retrieved successfully",
-        data,
-    });
-}));
-const deleteUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const id = req.params.id;
-    const data = yield users_service_1.default.deleteUserFromDB(id);
-    (0, sendResponse_1.default)(res, {
-        statusCode: http_status_1.default.OK,
-        success: true,
-        message: `${data ? 'User deleted successfully' : `No user found with id: ${id}`}`,
-        data,
-    });
-}));
-const updateUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const id = req.params.id;
-    const result = yield users_service_1.default.updateUserToDB(id, req.body);
-    (0, sendResponse_1.default)(res, {
-        statusCode: http_status_1.default.OK,
-        success: true,
-        message: `${result ? 'User updated successfully' : `Something went wrong, Not updated!`}`,
+        message: 'Users created successfully',
         data: result,
     });
 }));
-const updateMyProfile = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    if (!req.user) {
-        return new errors_apiError_1.default(http_status_1.default.FORBIDDEN, 'forbidden access');
-    }
-    const result = yield users_service_1.default.updateMyProfileToDB(req.user, req.body);
+const loginUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const loginData = req.body;
+    const result = yield users_service_1.default.loginUser(loginData);
+    const { refreshToken } = result, others = __rest(result, ["refreshToken"]);
+    // set refresh token into cookie
+    const cookieOptions = {
+        secure: config_1.default.env === 'production',
+        httpOnly: true,
+    };
+    res.cookie('refreshToken', refreshToken, cookieOptions);
+    (0, sendResponse_1.default)(res, {
+        statusCode: 200,
+        success: true,
+        message: 'User logged in successfully !',
+        data: others,
+    });
+}));
+const refreshToken = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { refreshToken } = req.cookies;
+    const result = yield users_service_1.default.refreshToken(refreshToken);
+    // set refresh token into cookie
+    const cookieOptions = {
+        secure: config_1.default.env === 'production',
+        httpOnly: true,
+    };
+    res.cookie('refreshToken', refreshToken, cookieOptions);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        message: `${result ? "User's information retrieved successfully" : "No User's information found"}`,
+        message: 'New access token generated successfully !',
         data: result,
     });
 }));
-exports.default = { getAllUsers, getSignleUsers, deleteUser, updateUser, getMyProfile, updateMyProfile };
+exports.default = { createUser, loginUser, refreshToken };

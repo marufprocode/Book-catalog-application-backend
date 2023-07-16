@@ -13,13 +13,13 @@ var __rest = (this && this.__rest) || function (s, e) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getSearchAndFiltersCondition = void 0;
 const getSearchAndFiltersCondition = (options, searchableFields) => {
-    const { searchTerm } = options, filters = __rest(options, ["searchTerm"]);
+    const { search } = options, filters = __rest(options, ["search"]);
     const conditions = [];
-    if (searchTerm) {
+    if (search) {
         conditions.push({
             $or: searchableFields.map(field => ({
                 [field]: {
-                    $regex: searchTerm,
+                    $regex: search,
                     $options: 'i',
                 },
             })),
@@ -28,18 +28,15 @@ const getSearchAndFiltersCondition = (options, searchableFields) => {
     if (Object.keys(filters).length) {
         const filterConditions = {};
         Object.entries(filters).forEach(([field, value]) => {
-            if (field === 'minPrice') {
-                filterConditions.price = Object.assign(Object.assign({}, (filterConditions.price || {})), { $gte: parseInt(value, 10) });
-            }
-            else if (field === 'maxPrice') {
-                filterConditions.price = Object.assign(Object.assign({}, (filterConditions.price || {})), { $lte: parseInt(value, 10) });
-            }
-            else {
-                filterConditions[field] = {
-                    $regex: value,
-                    $options: 'i',
-                };
-            }
+            // if (field === 'publicationYear') {
+            //   filterConditions[field] = value;
+            // } else{
+            //   filterConditions[field] = {
+            //     $regex: value,
+            //     $options: 'i',
+            //   };
+            // }  
+            filterConditions[field] = value;
         });
         if (Object.keys(filterConditions).length) {
             conditions.push({

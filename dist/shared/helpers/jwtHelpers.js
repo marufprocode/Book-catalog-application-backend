@@ -10,6 +10,7 @@ const createToken = (payload, secret, expireTime) => {
         expiresIn: expireTime,
     });
 };
+// verify jwt token
 const verifyToken = (token, secret) => {
     return jsonwebtoken_1.default.verify(token, secret);
 };

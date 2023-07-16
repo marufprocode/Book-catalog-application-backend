@@ -5,31 +5,26 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const users_routes_1 = __importDefault(require("../modules/users/users.routes"));
-const auth_routes_1 = __importDefault(require("../modules/auth/auth.routes"));
-const cow_routes_1 = __importDefault(require("../modules/cow/cow.routes"));
-const orders_routes_1 = __importDefault(require("../modules/orders/orders.routes"));
-const admin_routes_1 = __importDefault(require("../modules/admin/admin.routes"));
+const book_routes_1 = __importDefault(require("../modules/book/book.routes"));
+const wishlist_route_1 = __importDefault(require("../modules/wishlist/wishlist.route"));
+const readingList_route_1 = __importDefault(require("../modules/readingList/readingList.route"));
 const router = express_1.default.Router();
 const appRoutes = [
     {
-        path: '/users',
+        path: '/auth',
         route: users_routes_1.default,
     },
     {
-        path: '/auth',
-        route: auth_routes_1.default,
+        path: '/books',
+        route: book_routes_1.default,
     },
     {
-        path: '/cows',
-        route: cow_routes_1.default,
+        path: '/wishlist',
+        route: wishlist_route_1.default,
     },
     {
-        path: '/orders',
-        route: orders_routes_1.default,
-    },
-    {
-        path: '/admins',
-        route: admin_routes_1.default,
+        path: '/readinglist',
+        route: readingList_route_1.default,
     },
 ];
 appRoutes.forEach(route => router.use(route.path, route.route));

@@ -8,9 +8,6 @@ const userSchema = new Schema<IUser, Record<string, unknown>, UserStaticModel>(
     password: { type: String, required: true, select: 0 },
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
-    wishlist: [{ type: Schema.Types.ObjectId, ref: 'Book' }],
-    readingList: [{ type: Schema.Types.ObjectId, ref: 'Book' }],
-    finishedReading: [{ type: Schema.Types.ObjectId, ref: 'Book' }],
   },
   {
     timestamps: true,

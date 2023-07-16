@@ -23,6 +23,10 @@ const globalErrorHandler: ErrorRequestHandler = (error, req, res, next) => {
     statusCode = simplifiedError.statusCode;
     message = simplifiedError.message;
     errorMessages = simplifiedError.errorMessages;
+  } else if (error?.name === 'TokenExpiredError') {
+    statusCode = httpStatus.FORBIDDEN;
+    message = "Token Expired";
+    errorMessages = [];
   } else if (error?.name === 'CastError') {
     const simplifiedError = handleCastError(error);
     statusCode = simplifiedError.statusCode;

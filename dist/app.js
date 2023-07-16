@@ -20,17 +20,19 @@ const routes_1 = __importDefault(require("./app/routes"));
 const handleNotFoundRoutes_1 = __importDefault(require("./app/middlewares/handleNotFoundRoutes"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 // using cors
-app.use((0, cors_1.default)());
+app.use((0, cors_1.default)({
+    credentials: true,
+    origin: 'http://localhost:5173',
+}));
 //parser
 app.use(express_1.default.json());
 app.use((0, cookie_parser_1.default)());
 app.use(express_1.default.urlencoded({ extended: true }));
 // Application routes
-// app.use('/api/v1/users/', userRouter);
 app.use('/api/v1', routes_1.default);
 //Testing routes is running well
 app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    res.send('Digital Cow Hat Backend Server is Running');
+    res.send('Book Catalog Backend Server is Running');
 }));
 //global error handler
 app.use(globalErrorHandler_1.default);

@@ -11,21 +11,21 @@ const addWishListToDB = async (data: IWishList): Promise<IWishList | null> => {
   return createdBook;
 };
 const getAllWishListFromDB = async (user: string): Promise<IWishList[] | null> => {
-  const result = await WishList.find({user});
+  const result = await WishList.find({user}, {book:1}).populate('book');
   if (!result) {
     throw new ApiError(httpStatus.NOT_FOUND, 'No Items found in your WishList');
   }
   return result;
 };
 
-const deleteWishListFromDB = async (wishListId: string, userId: string): Promise<IWishList | null> => {
-  const book = await WishList.findById(wishListId);
+const deleteWishListFromDB = async (bookId: string, userId: string): Promise<IWishList | null> => {
+  const book = await WishList.findOne({book:bookId, user:userId});
   if (!book) {
-    throw new ApiError(httpStatus.NOT_FOUND, `No WishList found with id: ${wishListId}`);
+    throw new ApiError(httpStatus.NOT_FOUND, `No WishList found with id: ${bookId}`);
   } else if (book?.user.toString() !== userId) {
     throw new ApiError(httpStatus.FORBIDDEN, 'Unauthorized user');
   }
-  const result = await WishList.findByIdAndRemove(wishListId);
+  const result = await WishList.findByIdAndRemove(book.id);
   return result;
 };
 

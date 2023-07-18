@@ -8,7 +8,14 @@ const bookSchema = new mongoose_1.Schema({
     genre: { type: String, required: true },
     publicationYear: { type: Number, required: true },
     image: { type: String, required: false },
-    createdBy: { type: mongoose_1.Schema.Types.ObjectId, ref: 'User', required: true }
+    createdBy: { type: mongoose_1.Schema.Types.ObjectId, ref: 'User', required: true },
+    reviews: [
+        {
+            user: { type: mongoose_1.Schema.Types.ObjectId, ref: 'User', required: true },
+            name: { type: String, required: true },
+            review: { type: String, required: true },
+        },
+    ],
 }, {
     timestamps: true,
     toJSON: {

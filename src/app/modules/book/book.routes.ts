@@ -6,6 +6,8 @@ const router = express.Router();
 
 //Book Routes
 router.post('/create', checkAuth(), bookController.createBook);
+router.post('/review/:id', checkAuth(), bookController.postReview);
+router.get('/distinct/:id', bookController.getAllDistinct);
 router.get('/', bookController.getAllBooks);
 router.get('/:id', bookController.getSingleBook);
 router.delete('/:id', checkAuth(), bookController.deleteBook);

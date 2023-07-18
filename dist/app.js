@@ -20,10 +20,11 @@ const routes_1 = __importDefault(require("./app/routes"));
 const handleNotFoundRoutes_1 = __importDefault(require("./app/middlewares/handleNotFoundRoutes"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 // using cors
-app.use((0, cors_1.default)({
-    credentials: true,
-    origin: 'http://localhost:5173',
-}));
+// app.use(cors({
+//   credentials: true,
+//   origin: 'http://localhost:5173',
+// }));
+app.use((0, cors_1.default)());
 //parser
 app.use(express_1.default.json());
 app.use((0, cookie_parser_1.default)());

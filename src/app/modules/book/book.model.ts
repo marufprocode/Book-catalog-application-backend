@@ -8,7 +8,14 @@ const bookSchema = new Schema<IBook>(
     genre: { type: String, required: true },
     publicationYear: { type: Number, required: true },
     image: { type: String, required: false },
-    createdBy: { type: Schema.Types.ObjectId, ref: 'User', required: true }
+    createdBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    reviews: [
+      {
+        user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+        name: { type: String, required: true },
+        review: { type: String, required: true },
+      },
+    ],
   },
   {
     timestamps: true,

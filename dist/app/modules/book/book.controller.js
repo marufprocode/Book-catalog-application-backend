@@ -47,6 +47,16 @@ const getAllBooks = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, vo
         data,
     });
 }));
+const getAllDistinct = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const query = req.params.id;
+    const data = yield book_service_1.default.getAllDistinctFromDB(query);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: 'Books retrieved successfully',
+        data,
+    });
+}));
 const getSingleBook = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.params.id;
     const result = yield book_service_1.default.getSingleBookFromDB(id);
@@ -83,4 +93,19 @@ const updateBook = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, voi
         data: result,
     });
 }));
-exports.default = { createBook, getAllBooks, getSingleBook, deleteBook, updateBook };
+const postReview = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = req.params.id;
+    if (!req.user) {
+        return new errors_apiError_1.default(http_status_1.default.FORBIDDEN, 'forbidden access, user is not authorized');
+    }
+    const { name, review } = req.body;
+    const data = { user: req.user.userId, name, review };
+    const result = yield book_service_1.default.postReviewToDB(data, id);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: result,
+        message: `${result ? 'Review added successfully!' : `Review post failed`}`,
+        data: null,
+    });
+}));
+exports.default = { createBook, getAllBooks, getSingleBook, deleteBook, updateBook, getAllDistinct, postReview };

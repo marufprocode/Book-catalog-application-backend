@@ -9,6 +9,8 @@ const book_controller_1 = __importDefault(require("./book.controller"));
 const router = express_1.default.Router();
 //Book Routes
 router.post('/create', (0, checkAuth_1.default)(), book_controller_1.default.createBook);
+router.post('/review/:id', (0, checkAuth_1.default)(), book_controller_1.default.postReview);
+router.get('/distinct/:id', book_controller_1.default.getAllDistinct);
 router.get('/', book_controller_1.default.getAllBooks);
 router.get('/:id', book_controller_1.default.getSingleBook);
 router.delete('/:id', (0, checkAuth_1.default)(), book_controller_1.default.deleteBook);

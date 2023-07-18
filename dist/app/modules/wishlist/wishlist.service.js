@@ -23,21 +23,21 @@ const addWishListToDB = (data) => __awaiter(void 0, void 0, void 0, function* ()
     return createdBook;
 });
 const getAllWishListFromDB = (user) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield wishlist_model_1.WishList.find({ user });
+    const result = yield wishlist_model_1.WishList.find({ user }, { book: 1 }).populate('book');
     if (!result) {
         throw new errors_apiError_1.default(http_status_1.default.NOT_FOUND, 'No Items found in your WishList');
     }
     return result;
 });
-const deleteWishListFromDB = (wishListId, userId) => __awaiter(void 0, void 0, void 0, function* () {
-    const book = yield wishlist_model_1.WishList.findById(wishListId);
+const deleteWishListFromDB = (bookId, userId) => __awaiter(void 0, void 0, void 0, function* () {
+    const book = yield wishlist_model_1.WishList.findOne({ book: bookId, user: userId });
     if (!book) {
-        throw new errors_apiError_1.default(http_status_1.default.NOT_FOUND, `No WishList found with id: ${wishListId}`);
+        throw new errors_apiError_1.default(http_status_1.default.NOT_FOUND, `No WishList found with id: ${bookId}`);
     }
     else if ((book === null || book === void 0 ? void 0 : book.user.toString()) !== userId) {
         throw new errors_apiError_1.default(http_status_1.default.FORBIDDEN, 'Unauthorized user');
     }
-    const result = yield wishlist_model_1.WishList.findByIdAndRemove(wishListId);
+    const result = yield wishlist_model_1.WishList.findByIdAndRemove(book.id);
     return result;
 });
 exports.default = { addWishListToDB, getAllWishListFromDB, deleteWishListFromDB };

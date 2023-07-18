@@ -7,7 +7,6 @@ import sendResponse from '../../../shared/utilities/sendResponse';
 import { IReadingList } from './readingList.interface';
 
 const addToReadingList = catchAsync(async (req: Request, res: Response) => {
-  const id = req.params.id;
   if (!req.user) {
     return new ApiError(httpStatus.FORBIDDEN, 'forbidden access, user is not authorized');
   }
@@ -16,7 +15,7 @@ const addToReadingList = catchAsync(async (req: Request, res: Response) => {
   sendResponse<IReadingList | null>(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: `${result ? 'ReadingList updated successfully !' : `No Book found with id: ${id}`}`,
+    message: `${result ? 'ReadingList updated successfully !' : `No Book found for readlist`}`,
     data: result,
   });
 });

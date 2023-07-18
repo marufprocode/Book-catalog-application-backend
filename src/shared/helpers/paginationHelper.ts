@@ -10,7 +10,7 @@ interface IPaginationHelperOptions {
 
 export const calculatePagination = (options: IPaginationHelperOptions): IPaginationOptions => {
   const page = Number(options.page || 1);
-  const limit = Number(options.limit || 10);
+  const limit = Number(options.limit || 100);
   const skip = (page - 1) * limit;
 
   const sortBy = options.sortBy || 'createdAt';

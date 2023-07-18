@@ -18,7 +18,6 @@ const http_status_1 = __importDefault(require("http-status"));
 const readingList_service_1 = __importDefault(require("./readingList.service"));
 const sendResponse_1 = __importDefault(require("../../../shared/utilities/sendResponse"));
 const addToReadingList = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const id = req.params.id;
     if (!req.user) {
         return new errors_apiError_1.default(http_status_1.default.FORBIDDEN, 'forbidden access, user is not authorized');
     }
@@ -27,7 +26,7 @@ const addToReadingList = (0, catchAsync_1.default)((req, res) => __awaiter(void 
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        message: `${result ? 'ReadingList updated successfully !' : `No Book found with id: ${id}`}`,
+        message: `${result ? 'ReadingList updated successfully !' : `No Book found for readlist`}`,
         data: result,
     });
 }));

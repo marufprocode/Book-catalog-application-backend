@@ -40,6 +40,16 @@ const getAllBooks = catchAsync(async (req: Request, res: Response) => {
     data,
   });
 });
+const getAllDistinct = catchAsync(async (req: Request, res: Response) => {
+  const query = req.params.id;
+  const data = await bookService.getAllDistinctFromDB(query);
+  sendResponse<string[] | null>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Books retrieved successfully',
+    data,
+  });
+});
 
 const getSingleBook = catchAsync(async (req: Request, res: Response) => {
   const id = req.params.id;
@@ -79,5 +89,21 @@ const updateBook = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+const postReview = catchAsync(async (req: Request, res: Response) => {
+  const id = req.params.id;
+  if (!req.user) {
+    return new ApiError(httpStatus.FORBIDDEN, 'forbidden access, user is not authorized');
+  }
+  const { name, review } = req.body;
+  const data = {user:req.user.userId, name, review};
 
-export default { createBook, getAllBooks, getSingleBook, deleteBook, updateBook };
+  const result = await bookService.postReviewToDB(data, id);
+  sendResponse<null>(res, {
+    statusCode: httpStatus.OK,
+    success: result,
+    message: `${result ? 'Review added successfully!' : `Review post failed`}`,
+    data: null,
+  });
+});
+
+export default { createBook, getAllBooks, getSingleBook, deleteBook, updateBook, getAllDistinct, postReview };

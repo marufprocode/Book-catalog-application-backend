@@ -3,7 +3,7 @@ import httpStatus from 'http-status';
 import { getSearchAndFiltersCondition } from '../../../shared/helpers/getSearchAndFiltersCondition';
 import { IPaginationOptions, IPaginationResponse } from '../../../shared/interfaces/paginaton';
 import { booksSearchableFields } from './book.constants';
-import { IBook, IbookSearchAndFiletrs } from './book.interface';
+import { IBook, IReview, IbookSearchAndFiletrs } from './book.interface';
 import { Book } from './book.model';
 
 const createNewBookToDB = async (bookData: IBook): Promise<IBook | null> => {
@@ -31,6 +31,10 @@ const getAllBooksFromDB = async (
     },
     data: books,
   };
+};
+const getAllDistinctFromDB = async (query: string): Promise<string[]> => {
+  const result = await Book.distinct(query);
+  return result;
 };
 
 const getSingleBookFromDB = async (id: string): Promise<IBook | null> => {
@@ -60,8 +64,20 @@ const updateBookToDB = async (
   } else if (book?.createdBy.toString() !== userId) {
     throw new ApiError(httpStatus.FORBIDDEN, 'Unauthorized user');
   }
-  const result = await Book.findOneAndUpdate({ _id: bookId }, data, { new: true, runValidators: true });
+  const result = await Book.findOneAndUpdate({ _id: bookId }, data, {
+    new: true,
+    runValidators: true,
+  });
   return result;
+};
+const postReviewToDB = async (data: IReview, bookId: string): Promise<boolean> => {
+  const book = await Book.findById(bookId);
+  if (!book) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Book not found');
+  }
+  book.reviews.push(data);
+  await book.save();
+  return true;
 };
 
 export default {
@@ -70,4 +86,6 @@ export default {
   getSingleBookFromDB,
   deleteBookFromDB,
   updateBookToDB,
+  getAllDistinctFromDB,
+  postReviewToDB,
 };

@@ -36,6 +36,10 @@ const getAllBooksFromDB = (searchAndFilters, paginationOptions) => __awaiter(voi
         data: books,
     };
 });
+const getAllDistinctFromDB = (query) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield book_model_1.Book.distinct(query);
+    return result;
+});
 const getSingleBookFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield book_model_1.Book.findById(id);
     return result;
@@ -59,8 +63,20 @@ const updateBookToDB = (bookId, data, userId) => __awaiter(void 0, void 0, void 
     else if ((book === null || book === void 0 ? void 0 : book.createdBy.toString()) !== userId) {
         throw new errors_apiError_1.default(http_status_1.default.FORBIDDEN, 'Unauthorized user');
     }
-    const result = yield book_model_1.Book.findOneAndUpdate({ _id: bookId }, data, { new: true, runValidators: true });
+    const result = yield book_model_1.Book.findOneAndUpdate({ _id: bookId }, data, {
+        new: true,
+        runValidators: true,
+    });
     return result;
+});
+const postReviewToDB = (data, bookId) => __awaiter(void 0, void 0, void 0, function* () {
+    const book = yield book_model_1.Book.findById(bookId);
+    if (!book) {
+        throw new errors_apiError_1.default(http_status_1.default.NOT_FOUND, 'Book not found');
+    }
+    book.reviews.push(data);
+    yield book.save();
+    return true;
 });
 exports.default = {
     createNewBookToDB,
@@ -68,4 +84,6 @@ exports.default = {
     getSingleBookFromDB,
     deleteBookFromDB,
     updateBookToDB,
+    getAllDistinctFromDB,
+    postReviewToDB,
 };
